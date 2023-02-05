@@ -12,10 +12,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.mhmdvoid.pdfinvoices.service.InvoiceService;
 import com.mhmdvoid.pdfinvoices.model.Invoice;
+import com.mhmdvoid.pdfinvoices.context.AppContext;
 
 public class MainServlet extends HttpServlet {
-    private InvoiceService invoiceService = new InvoiceService();
-    private ObjectMapper objectMapper = new ObjectMapper();
 
     // Now once the client calls up /invoices we return json to fron end point
     // So You have built the endpoint here.
@@ -32,8 +31,8 @@ public class MainServlet extends HttpServlet {
                             "</html>");
         } else if (request.getRequestURI().equalsIgnoreCase("/invoices")) {
             response.setContentType("application/json; charset=UTF-8");
-            List<Invoice> invoices = invoiceService.findAll();  // (2)
-            response.getWriter().print(objectMapper.writeValueAsString(invoices));  // (3)
+            List<Invoice> invoices = AppContext.invoiceService.findAll();  // (2)
+            response.getWriter().print(AppContext.objectMapper.writeValueAsString(invoices));  // (3)
         }
     }
 
@@ -44,10 +43,10 @@ public class MainServlet extends HttpServlet {
             String userId = request.getParameter("user_id");
             Integer amount = Integer.valueOf(request.getParameter("amount"));
 
-            Invoice invoice = invoiceService.create(userId, amount);
+            Invoice invoice = AppContext.invoiceService.create(userId, amount);
 
             response.setContentType("application/json; charset=UTF-8");
-            String json = objectMapper.writeValueAsString(invoice);
+            String json = AppContext.objectMapper.writeValueAsString(invoice);
             response.getWriter().print(json);
         } else {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
